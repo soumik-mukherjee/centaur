@@ -1,0 +1,29 @@
+on:
+  create:
+    branches:
+      - master
+
+name: Initialize this repository
+
+jobs:
+  job1:
+    name: do the job plz
+    runs-on: ubuntu-latest
+    env:  
+      BOTUSER_EMAIL: ${{ secrets.BOTUSER_EMAIL }}
+      BOTUSER_NAME: ${{ secrets.BOTUSER_NAME }}
+    steps:
+      - id: step10
+        name: Checkout Code
+        uses: actions/checkout@v2
+        with:
+          # This same token will be used later for "git push" and other authenticated commands
+          token: ${{ secrets.BOTUSER_PAT }}
+          ref: 'master'
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          node ./scripts/init.js ${{ github.repository_owner }} ${{ github.repository }}
+          git commit -m "Tailoring your package.json"
+          git push origin master
+
