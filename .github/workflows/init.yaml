@@ -1,7 +1,5 @@
 on:
-  create:
-    branches:
-      - master
+  workflow_dispatch:
 
 name: Initialize this repository
 
@@ -9,15 +7,21 @@ jobs:
   job1:
     name: do the job plz
     runs-on: ubuntu-latest
+    env:  
+      COMMIT_USER_EMAIL: ${{ secrets.COMMIT_USER_EMAIL }}
+      COMMIT_USER_NAME: ${{ secrets.COMMIT_USER_NAME }}
+      COMMIT_USER_PAT: ${{ secrets.COMMIT_USER_PAT }}
     steps:
       - id: step10
         uses: actions/checkout@v2
         with:
+        # This same token will be used later for "git push" and other authenticated commands
+          token: ${{ env.COMMIT_USER_PAT }}
           ref: 'master'
       - id: step20
         run: |
-          git config user.name github-actions
-          git config user.email github-actions@github.com
+          git config user.name ${{ env.COMMIT_USER_NAME }}
+          git config user.email ${{ env.COMMIT_USER_EMAIL }}
           node ./scripts/init.js ${{ github.repository_owner }} ${{ github.repository }}
           git commit -m "Tailoring your package.json"
           git push origin master
