@@ -22,8 +22,8 @@ jobs:
         run: |
           git config user.name ${{ env.COMMIT_USER_NAME }}
           git config user.email ${{ env.COMMIT_USER_EMAIL }}
-          node ./scripts/init.js ${{ github.repository_owner }} ${{ github.repository }}
+          node ./.template-scripts/init.js ${{ github.repository_owner }} ${{ github.repository }}
           git add .
-          git commit -m "Tailoring your package.json"
+          git commit -m "template: Tailoring your package.json"
           git push origin master
 
