@@ -14,12 +14,12 @@ jobs:
       BOTUSER_NAME: ${{ secrets.BOTUSER_NAME }}
     steps:
       - id: step10
-        name: Checkout Code
         uses: actions/checkout@v2
         with:
           # This same token will be used later for "git push" and other authenticated commands
           token: ${{ secrets.BOTUSER_PAT }}
           ref: 'master'
+      - id: step20
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
