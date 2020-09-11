@@ -12,7 +12,7 @@ console.log('githubOrg: ', githubOrg);
 console.log('githubOrgRepo: ', githubOrgRepo);
 console.log('githubRepo: ', githubRepo);
 
-let pkgTemplateFile = fs.readFileSync('../package.json');
+let pkgTemplateFile = fs.readFileSync('package.json');
 let pkg = JSON.parse(pkgTemplateFile);
 
 
@@ -23,5 +23,5 @@ pkg.module = `dist/${githubRepo}.esm.js`;
 pkg.files = [`dist/${githubRepo}.js`, `dist/${githubRepo}.esm.js`];
 pkg.repository = `https://github.com/${githubOrgRepo}`
 
-fs.writeFileSync('../package.json',JSON.stringify(pkg));
+fs.writeFileSync('package.json',JSON.stringify(pkg));
 
