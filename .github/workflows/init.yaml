@@ -9,15 +9,10 @@ jobs:
   job1:
     name: do the job plz
     runs-on: ubuntu-latest
-    env:  
-      BOTUSER_EMAIL: ${{ secrets.BOTUSER_EMAIL }}
-      BOTUSER_NAME: ${{ secrets.BOTUSER_NAME }}
     steps:
       - id: step10
         uses: actions/checkout@v2
         with:
-          # This same token will be used later for "git push" and other authenticated commands
-          token: ${{ secrets.BOTUSER_PAT }}
           ref: 'master'
       - id: step20
         run: |
