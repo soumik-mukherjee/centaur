@@ -1,11 +1,11 @@
 on:
   workflow_dispatch:
 
-name: Initialize this repository
+name: Initialize an AppSync Project
 
 jobs:
-  job1:
-    name: do the job plz
+  init-repo:
+    name: Repository Initialization
     runs-on: ubuntu-latest
     env:  
       COMMIT_USER_EMAIL: ${{ secrets.COMMIT_USER_EMAIL }}
@@ -13,12 +13,14 @@ jobs:
       COMMIT_USER_PAT: ${{ secrets.COMMIT_USER_PAT }}
     steps:
       - id: step10
+        name: Checkout Code
         uses: actions/checkout@v2
         with:
         # This same token will be used later for "git push" and other authenticated commands
           token: ${{ env.COMMIT_USER_PAT }}
           ref: 'master'
       - id: step20
+        name: Update package.json
         run: |
           git config user.name ${{ env.COMMIT_USER_NAME }}
           git config user.email ${{ env.COMMIT_USER_EMAIL }}
