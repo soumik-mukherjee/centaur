@@ -61,5 +61,19 @@ jobs:
       - id: step30
         name: Do amplify init
         run: |
-         ./.centaur/scripts/amplifyInit.sh 
-
+          ./.centaur/scripts/amplifyInit.sh
+      - id: step40
+        name: Cache amplify/team-provider.json
+        uses: actions/cache@v2
+        env:
+          cache-name: team-provider
+        with:
+          # 
+          path: ./amplify/team-provider.json
+          key: environment-${{ env.ENVNAME }}-${{ env.cache-name }}
+          restore-keys: |
+            environment-${{ env.ENVNAME }}-${{ env.cache-name }}
+      - id: step50
+        name: Cleanup
+        run: |
+          rm -Rf ${{ env.CENTAUR_CACHE_PATH }}
