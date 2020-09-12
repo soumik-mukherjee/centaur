@@ -26,9 +26,10 @@ jobs:
           git config user.email ${{ env.COMMIT_USER_EMAIL }}
           yarn
           node ./.centaur/scripts/init.js initPkg ${{ github.repository_owner }} ${{ github.repository }}
-          git add .
-          git commit -m "template: Tailoring your package.json"
-          git push origin master
+      - id: step25
+        name: Try commit package.json
+        run: |
+          ./.centaur/scripts/tryPkgCommit.sh
   init-amplify:
     needs: init-pkg
     name: Amplify Initialization
