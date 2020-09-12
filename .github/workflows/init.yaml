@@ -24,6 +24,7 @@ jobs:
         run: |
           git config user.name ${{ env.COMMIT_USER_NAME }}
           git config user.email ${{ env.COMMIT_USER_EMAIL }}
+          yarn
           node ./.centaur/scripts/init.js initPkg ${{ github.repository_owner }} ${{ github.repository }}
           git add .
           git commit -m "template: Tailoring your package.json"
@@ -49,6 +50,7 @@ jobs:
         name: Prepare headless params
         run: |
           mkdir -p ${{ env.CENTAUR_CACHE_PATH }}
+          yarn
           node ./.centaur/scripts/init.js \
             cacheHeadlessParams \
             ${{ github.repository_owner }} \
