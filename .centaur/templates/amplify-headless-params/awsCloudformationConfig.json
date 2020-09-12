@@ -1,7 +1,6 @@
 {
     "configLevel": "project",
-    "useProfile": "false",
-    "profileName": "default",
+    "useProfile": false,
     "accessKeyId": "",
     "secretAccessKey": "",
     "region": ""
