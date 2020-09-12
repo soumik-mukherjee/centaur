@@ -4,7 +4,7 @@ on:
 name: Initialize an AppSync Project
 
 jobs:
-  init-repo:
+  init-pkg:
     name: Repository Initialization
     runs-on: ubuntu-latest
     env:  
@@ -24,8 +24,42 @@ jobs:
         run: |
           git config user.name ${{ env.COMMIT_USER_NAME }}
           git config user.email ${{ env.COMMIT_USER_EMAIL }}
-          node ./.template-scripts/init.js ${{ github.repository_owner }} ${{ github.repository }}
+          node ./.centaur/scripts/init.js initPkg ${{ github.repository_owner }} ${{ github.repository }}
           git add .
           git commit -m "template: Tailoring your package.json"
           git push origin master
+  init-amplify:
+    needs: init-pkg
+    name: Amplify Initialization
+    runs-on: ubuntu-latest
+    env:  
+      COMMIT_USER_EMAIL: ${{ secrets.COMMIT_USER_EMAIL }}
+      COMMIT_USER_NAME: ${{ secrets.COMMIT_USER_NAME }}
+      COMMIT_USER_PAT: ${{ secrets.COMMIT_USER_PAT }}
+      REGION: ap-south-1
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.DEV_SECRET_ACCESS_KEY }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.DEV_ACCESS_KEY_ID }}
+      ENVNAME: dev
+      CENTAUR_CACHE_PATH: ./.centaur/cache/init-workflow/${{ github.run_number }}
+    steps:
+      - id: step10
+        name: Checkout Code
+        uses: actions/checkout@v2
+      - id: step20
+        name: Prepare headless params
+        run: |
+          mkdir -p ${{ env.CENTAUR_CACHE_PATH }}
+          node ./.centaur/scripts/init.js \
+            cacheHeadlessParams \
+            ${{ github.repository_owner }} \
+            ${{ github.repository }} \
+            ${{ github.run_number }} \
+            ${{ env.REGION }} \
+            ${{ env.AWS_ACCESS_KEY_ID }} \
+            ${{ env.AWS_SECRET_ACCESS_KEY }} \
+            ${{ env.ENVNAME }}
+      - id: step30
+        name: Do amplify init
+        run: |
+         ./.centaur/scripts/amplifyInit.sh 
 
