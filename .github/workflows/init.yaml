@@ -28,8 +28,10 @@ jobs:
           node ./.centaur/scripts/init.js initPkg ${{ github.repository_owner }} ${{ github.repository }}
       - id: step25
         name: Try commit package.json
+        env:
+          COMMIT_MESSAGE: Tailored package.json
         run: |
-          ./.centaur/scripts/tryPkgCommit.sh
+          ./.centaur/scripts/tryGitCommit.sh
   init-amplify:
     needs: init-pkg
     name: Amplify Initialization
@@ -61,6 +63,7 @@ jobs:
             ${{ env.AWS_ACCESS_KEY_ID }} \
             ${{ env.AWS_SECRET_ACCESS_KEY }} \
             ${{ env.ENVNAME }}
+            ${{ env.CENTAUR_CACHE_PATH }}
       - id: step30
         name: Do amplify init
         run: |
@@ -78,6 +81,12 @@ jobs:
           restore-keys: |
             environment-${{ env.ENVNAME }}-${{ env.cache-name }}
       - id: step50
+        name: Try commit amplify init changes
+        env:
+          COMMIT_MESSAGE: Done amplify init
+        run: |
+          ./.centaur/scripts/tryGitCommit.sh
+      - id: step60
         name: Cleanup
         run: |
           rm -Rf ${{ env.CENTAUR_CACHE_PATH }}
