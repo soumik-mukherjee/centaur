@@ -79,7 +79,7 @@ jobs:
           sudo npm install -g @aws-amplify/cli
           ./.centaur/scripts/amplifyInit.sh
       - id: step40
-        name: Cache amplify/team-provider.json
+        name: Cache amplify/team-provider-info.json
         uses: actions/cache@v2
         env:
           cache-name: team-provider
@@ -101,6 +101,12 @@ jobs:
           ./.centaur/scripts/tryGitCommit.sh
           git push origin master
       - id: step60
+        name: Upload team-provider-info.json
+        uses: actions/upload-artifact@v2
+        with:
+          name: team-provider-info-dev
+          path: ./amplify/team-provider-info.json          
+      - id: step70
         name: Cleanup
         run: |
           rm -Rf ${{ env.CENTAUR_CACHE_PATH }}
