@@ -22,8 +22,6 @@ jobs:
       - id: step20
         name: Update package.json
         run: |
-          git config user.name ${{ env.COMMIT_USER_NAME }}
-          git config user.email ${{ env.COMMIT_USER_EMAIL }}
           yarn
           node ./.centaur/scripts/init.js initPkg ${{ github.repository_owner }} ${{ github.repository }}
       - id: step25
@@ -31,6 +29,8 @@ jobs:
         env:
           COMMIT_MESSAGE: Tailored package.json
         run: |
+          git config user.name ${{ env.COMMIT_USER_NAME }}
+          git config user.email ${{ env.COMMIT_USER_EMAIL }}
           ./.centaur/scripts/tryGitCommit.sh
           git push origin master
   init-amplify:
@@ -50,6 +50,10 @@ jobs:
       - id: step10
         name: Checkout Code
         uses: actions/checkout@v2
+        with:
+        # This same token will be used later for "git push" and other authenticated commands
+          token: ${{ env.COMMIT_USER_PAT }}
+          ref: 'master'        
       - id: step20
         name: Prepare headless params
         run: |
@@ -86,6 +90,8 @@ jobs:
         env:
           COMMIT_MESSAGE: Done amplify init
         run: |
+          git config user.name ${{ env.COMMIT_USER_NAME }}
+          git config user.email ${{ env.COMMIT_USER_EMAIL }}        
           ./.centaur/scripts/tryGitCommit.sh
           git push origin master
       - id: step60
