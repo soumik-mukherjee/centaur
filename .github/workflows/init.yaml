@@ -63,7 +63,7 @@ jobs:
             ${{ env.REGION }} \
             ${{ env.AWS_ACCESS_KEY_ID }} \
             ${{ env.AWS_SECRET_ACCESS_KEY }} \
-            ${{ env.ENVNAME }}
+            ${{ env.ENVNAME }} \
             ${{ env.CENTAUR_CACHE_PATH }}
       - id: step30
         name: Do amplify init
