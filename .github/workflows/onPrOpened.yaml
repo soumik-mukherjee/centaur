@@ -26,7 +26,7 @@ jobs:
         with:
           # This same token will be used later for "git push" and other authenticated commands
           token: ${{ env.COMMIT_USER_PAT }}
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.event.pull_request.head.ref }}
       - id: step30
         name: Generate ENVNAME
         run: echo "::set-env name=ENVNAME::$(head /dev/urandom | tr -dc a-z | head -c 10 ;)"
