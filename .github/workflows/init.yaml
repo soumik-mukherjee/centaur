@@ -96,8 +96,8 @@ jobs:
         run: |
           git config user.name ${{ env.COMMIT_USER_NAME }}
           git config user.email ${{ env.COMMIT_USER_EMAIL }}        
-          cat '# Override Amplify - ignore team-provider-info.json' >> .gitignore
-          cat 'amplify/team-provider-info.json' >> .gitignore
+          echo '# Override Amplify - ignore team-provider-info.json' >> .gitignore
+          echo 'amplify/team-provider-info.json' >> .gitignore
           ./.centaur/scripts/tryGitCommit.sh
           git push origin master
       - id: step60
