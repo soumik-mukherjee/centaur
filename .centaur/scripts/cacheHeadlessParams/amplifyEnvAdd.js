@@ -1,7 +1,8 @@
 const camelCase = require('camelcase');
 const fs = require('fs');
 
-module.exports.cacheHeadlessParams = function (args) {
+module.exports.amplifyEnvAdd = function (args) {
+    const [subCommand, ...restOfArgs] = args
     const [githubOrg, githubOrgRepo, runNumber, region, awsAccessKeyId, awsSecretAccessKey, envName, centaurCachePath] = args
     const githubRepo = githubOrgRepo.substr(githubOrgRepo.indexOf('/') + 1, githubOrgRepo.length - 1)
     const projectName = camelCase(githubRepo, { pascalCase: true });
@@ -27,17 +28,6 @@ module.exports.cacheHeadlessParams = function (args) {
     awsCloudformationConfig.region = region;
 
     fs.writeFileSync(`${centaurCachePath}/awsCloudformationConfig.json`, JSON.stringify(awsCloudformationConfig));
-
-    // Load & setup react config template
-    let reactConfigTemplateFile = fs.readFileSync('./.centaur/templates/amplify-headless-params/reactConfig.json');
-    let reactConfig = JSON.parse(reactConfigTemplateFile);
-    fs.writeFileSync(`${centaurCachePath}/reactConfig.json`, JSON.stringify(reactConfig));
-
-    // Load & setup aws frontend config template
-    let frontendCfgTemplateFile = fs.readFileSync('./.centaur/templates/amplify-headless-params/frontend.json');
-    let frontendConfig = JSON.parse(frontendCfgTemplateFile);
-    frontendConfig.config = reactConfig;
-    fs.writeFileSync(`${centaurCachePath}/frontend.json`, JSON.stringify(frontendConfig));
 
     // Setup providers 
     let providers = {awscloudformation: awsCloudformationConfig}

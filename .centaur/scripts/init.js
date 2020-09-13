@@ -4,7 +4,7 @@
 
 const fs = require('fs');
 const { initPkg } = require('./initPkg');
-const { cacheHeadlessParams } = require('./cacheHeadlessParams');
+const { cacheHeadlessParams } = require('./cacheHeadlessParams')
 
 const [, , ...args] = process.argv
 const [command, ...restOfArgs] = args

@@ -1,2 +1,4 @@
 # centaur - Do not remove
 .centaur/cache
+
+node_modules
