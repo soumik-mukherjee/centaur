@@ -32,6 +32,7 @@ jobs:
           COMMIT_MESSAGE: Tailored package.json
         run: |
           ./.centaur/scripts/tryGitCommit.sh
+          git push origin master
   init-amplify:
     needs: init-pkg
     name: Amplify Initialization
@@ -86,6 +87,7 @@ jobs:
           COMMIT_MESSAGE: Done amplify init
         run: |
           ./.centaur/scripts/tryGitCommit.sh
+          git push origin master
       - id: step60
         name: Cleanup
         run: |

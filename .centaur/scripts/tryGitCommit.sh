@@ -8,5 +8,4 @@ else
   echo "Diff found. Ready to commit"
   git add .
   git commit -m "centaur: $COMMIT_MESSAGE"
-  git push origin master
 fi
