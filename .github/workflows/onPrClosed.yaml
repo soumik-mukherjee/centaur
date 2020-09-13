@@ -1,16 +1,16 @@
 on:
   pull_request:
-    types: [opened, reopened]
+    types: [closed]
     branches:
       - master
 
-name: On PR (re)opened Workflow
+name: On PR closed Workflow
 
 jobs:
-  amplify-env-add:
-    name: Initialize a new amplify cloud environment
+  amplify-env-del:
+    name: Remove PR sandbox env from cloud
     runs-on: ubuntu-latest
-    env:  
+    env:
       COMMIT_USER_EMAIL: ${{ secrets.COMMIT_USER_EMAIL }}
       COMMIT_USER_NAME: ${{ secrets.COMMIT_USER_NAME }}
       COMMIT_USER_PAT: ${{ secrets.COMMIT_USER_PAT }}
@@ -18,7 +18,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.DEV_SECRET_ACCESS_KEY }}
       AWS_ACCESS_KEY_ID: ${{ secrets.DEV_ACCESS_KEY_ID }}
       CENTAUR_CACHE_PATH: ./.centaur/cache/init-workflow/${{ github.run_number }}
-      # env.ENVNAME is required but it must be randomly generated in this workflow, see step30
+      # env.ENVNAME is required but it must be fetched from the workflow cache, see step40
     steps:
       - id: step20
         name: Checkout Merge Branch Code
@@ -28,22 +28,22 @@ jobs:
           token: ${{ env.COMMIT_USER_PAT }}
           ref: ${{ github.event.pull_request.head.ref }}
       - id: step30
-        name: Generate ENVNAME
-        run: echo "::set-env name=ENVNAME::$(head /dev/urandom | tr -dc a-z | head -c 10 ;)"
-      - id: step40
-        name: Fetch Dev team-provider-info
+        name: Fetch sandbox team-provider-info
         uses: actions/cache@v2
         env:
           cache-name: team-provider
         with:
-          # This ensures that we dont have to manage persiting appId by ourselves. 
+          # This ensures that we dont have to manage persiting appId by ourselves.
           # Also, the environment will be added to the same app as the 'dev' environment.
-          # Versioning ./amplify/team-provider-info.json in git will be problematic with 
+          # Versioning ./amplify/team-provider-info.json in git will be problematic with
           # workflows that handle other "environments" - i.e. test, prod
           path: ./amplify/team-provider-info.json
-          key: environment-dev-${{ env.cache-name }}
+          key: pr-${{ github.event.pull_request.number }}-${{ env.cache-name }}
           restore-keys: |
-            environment-dev-${{ env.cache-name }}
+            pr-${{ github.event.pull_request.number }}-${{ env.cache-name }}
+      - id: step40
+        name: Fetch ENVNAME
+        run: echo "::set-env name=ENVNAME::$(node ./.centaur/scripts/getCurrentEnv.js ./amplify/team-provider-info.json)"
       - id: step50
         name: Prepare headless params
         run: |
@@ -51,7 +51,7 @@ jobs:
           yarn
           node ./.centaur/scripts/init.js \
             cacheHeadlessParams \
-            amplifyEnvAdd \
+            amplifyEnvRemove \
             ${{ github.repository_owner }} \
             ${{ github.repository }} \
             ${{ github.run_number }} \
@@ -61,40 +61,14 @@ jobs:
             ${{ env.ENVNAME }} \
             ${{ env.CENTAUR_CACHE_PATH }}
       - id: step60
-        name: Do amplify env add
+        name: Do amplify env remove
         run: |
           sudo npm install -g @aws-amplify/cli
-          ./.centaur/scripts/amplifyEnvAdd.sh
-      - id: step70
-        name: Try commit amplify env add changes
-        env:
-          COMMIT_MESSAGE: Added new sandbox environment ${{ env.ENVNAME }}
-        run: |
-          git config user.name ${{ env.COMMIT_USER_NAME }}
-          git config user.email ${{ env.COMMIT_USER_EMAIL }}        
-          ./.centaur/scripts/tryGitCommit.sh
-          git push 
-      - id: step80
-        name: Print App Details
-        run: amplify status
-      - id: step90
-        name: Cache sandbox team-provider-info
-        uses: actions/cache@v2
-        env:
-          cache-name: team-provider-info
-        with:
-          # 
-          path: ./amplify/team-provider-info.json
-          key: pr-${{ github.event.pull_request.number }}-${{ env.cache-name }}
-          restore-keys: |
-            pr-${{ github.event.pull_request.number }}-${{ env.cache-name }}
+          echo ${{ env.ENVNAME }}
+          ./.centaur/scripts/amplifyEnvRemove.sh
       - id: step100
         name: Upload team-provider-info.json
         uses: actions/upload-artifact@v2
         with:
           name: team-provider-info-pr-${{ github.event.pull_request.number }}
-          path: ./amplify/team-provider-info.json    
-      - id: step110      
-        name: Cleanup
-        run: |
-          rm -Rf ${{ env.CENTAUR_CACHE_PATH }}
+          path: ./amplify/team-provider-info.json
